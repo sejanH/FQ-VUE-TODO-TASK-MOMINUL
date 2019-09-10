@@ -8,14 +8,14 @@
           v-if="$route.name=='todo'"
           @click="$router.push({name:'new-todo'})"
           class="btn bg-mevn btn-xs"
-          title="Add new"
-          >&#x2725;</button>
+          title="Add new Todo"
+          >New Todo &#x2725;</button>
           <button
           v-if="$route.name == 'new-todo'"
           @click="$router.go(-1)"
           class="btn bg-mevn btn-xs"
           title="Back"
-          >&#x276E;&#x276E;</button>
+          >&#x276E;&#x276E; Back</button>
         </div>
         <div class="scrollbar">
           <div class="handle">
@@ -32,7 +32,7 @@
             :class="[$route.name=='todo'?'':'disabled']"
             >
             <span class="todoActions" v-if="selectedTodo[0].id==todo.id">
-              <button class="btn btn-xs bg-danger" @click="deleteTodo(todo.id)">X</button>
+              <button class="btn btn-xs bg-danger" @click="deleteTodo(todo.id)" title="Delete entire Todo">X</button>
             </span>
             <small>{{todo.title }}</small>
           </li>
@@ -44,13 +44,12 @@
       <table class="table table-borderless table-sm" v-if="selectedTodo.length !== 0">
         <tr id="todo">
           <td
-          :class="[selectedTodo[0].deleted ? 'strike':'','']"
           style="font-size: 1.15rem;font-weight: 600"
           >
           {{selectedTodo[0].title}}-
           <small>{{selectedTodo[0].body}}</small>
         </td>
-          <button class="btn btn-xs bg-mevn" title="Add new task" @click="addTask">&#x2724;</button>
+          <button class="btn btn-xs bg-mevn" title="Add new task under the Todo" @click="addTask">New Task&#x2724;</button>
         </td>
       </tr>
     </table>
@@ -165,15 +164,10 @@
         }).then(value => {
           switch (value) {
             case "delete":
-/*            axios
-            .post("http://localhost:8081/api/todo/delete", {
-              token: localStorage.getItem("token"),
-              todoId
-            })
-            .then(res => {
+            let toBeDeleted = this.todos.findIndex(data => data.id == todoId);
+            this.todos.splice(toBeDeleted,1);
+            localStorage.setItem('todos',JSON.stringify(this.todos));
               this.getTodo();
-            })
-            .catch(err => {});*/
             break;
             default:
             swal({ text: "Delete cancelled!", button: false, timer: 1000 });
@@ -191,35 +185,13 @@
           }
         }).then(value => {
           if (value == "save") {
-            this.dataParse(this.selectedTodo[1]);
-     /*     axios
-            .post("http://localhost:8081/api/todo-save-order", {
-              token: localStorage.getItem("token"),
-              todoId,
-              newOrder: this.selectedTodo[1]
-            })
-            .then(res => {
-              if (res.data.nModified == 1) {
+            this.selectedTodo[1];
+            this.todos[this.todos.findIndex(data=>data.id == todoId)].tasks = this.selectedTodo[1];
+            localStorage.setItem('todos',JSON.stringify(this.todos));
                 this.getTodo(todoId);
-              }
-            })
-            .catch(err => {
-              console.log(err);
-            });*/
         } else {
         }
       });
-      },
-      dataParse(data) {
-        data.forEach((currentValue) => {
-          delete currentValue.created_att;
-          currentValue.tasks.forEach((val) => {
-           delete val.created_att;
-           if (val.tasks.length > 0) {
-            this.dateParse(val.tasks);
-          }
-        });
-        });
       },
       orderList() {
         this.list = this.list.sort((one, two) => {
@@ -331,12 +303,6 @@ tr#todo {
   left: -10px;
   width: 22px;
   height: 100%;
-}
-.strike {
-  text-decoration: line-through;
-}
-span.actions {
-  float: right;
 }
 /* draggable css*/
 .flip-list-move {

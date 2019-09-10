@@ -12,35 +12,13 @@
     >
       <transition-group type="transition" :name="!isDragging ? 'flip-list' : null">
         <div
-          :class="[!element.active?'strike':'','list-group-item']"
+          class="list-group-item"
           v-for="element in tasks"
           :key="element.id"
         >
           <div>
             {{ element.title }} -
             <small>{{element.body}}</small>
-            <span class="actions">
-              <span
-                style="display:inline-block;"
-                class="custom-control custom-checkbox"
-                title="mark as complete"
-              >
-                <input
-                  class="custom-control-input"
-                  type="checkbox"
-                  :value="element.id"
-                  :checked="!element.active"
-                  :id="'complete_'+element.id"
-                  @change="checkBoxAction"
-                />
-                <label
-                  v-if="!element.active"
-                  class="custom-control-label"
-                  :for="'complete_'+element.id"
-                >&#10004;</label>
-                <label v-else class="custom-control-label" :for="'complete_'+element.id">&#9022;</label>
-              </span>
-            </span>
           </div>
           <span v-if="element.tasks.length > 0">
             <nested-draggable :tasks="element.tasks" />
@@ -97,43 +75,6 @@ export default {
       return (
         (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
       );
-    },
-    checkBoxAction(e) {
-      if (
-        e.target.checked &&
-        this.tasks.filter(data => data.id == e.target.value)[0].active == true
-      ) {
-        const id = e.target.value;
-        const token = localStorage.getItem("token");
-        axios
-          .post("http://localhost:8081/api/todo-list/change-task-status", {
-            todoId: this.$parent.selectedTodo[0].id,
-            id: id,
-            token: token
-          })
-          .then(res => {
-            if (res.data.nModified == 1) {
-              this.todoTasks.tasks.filter(
-                data => data.id == id
-              )[0].active = false;
-            } else {
-              e.target.checked = false;
-              swal({
-                icon: "warning",
-                text: "Something went wrong! Try again later"
-              });
-            }
-          })
-          .catch(err => {});
-      } else {
-        swal({
-          icon: "info",
-          text: "Once marked completed it cannot be undone yet!",
-          timer: 2000,
-          button: false
-        });
-        e.target.checked = true;
-      }
     }
   },
   components: {
@@ -158,12 +99,6 @@ export default {
 };
 </script>
 <style scoped>
-.strike {
-  text-decoration: line-through;
-}
-span.actions {
-  float: right;
-}
 /* draggable css*/
 .flip-list-move {
   transition: linear transform 0.5s;

@@ -45,10 +45,10 @@
     methods: {
       addNewTodo() {
         if (typeof this.$route.query.todo == "undefined") {
-          let todoCount =  localStorage.getItem('todos') != null ? JSON.stringify(localStorage.getItem('todos')).length : 0;
+          let todoCount =  localStorage.getItem('todos') != null ? JSON.parse(localStorage.getItem('todos')).length : 0;
           if(todoCount == 0){
-          let blob = [{"id" : todoCount+1,"title" : this.newTodo.title,"body":this.newTodo.body,"parent":0,"tasks":this.newTodo.tasks}];
-          localStorage.setItem('todos',JSON.stringify(blob));
+            let blob = [{"id" : todoCount+1,"title" : this.newTodo.title,"body":this.newTodo.body,"parent":0,"tasks":this.newTodo.tasks}];
+            localStorage.setItem('todos',JSON.stringify(blob));
           }
           else{
             let blob = {"id" : todoCount+1,"title" : this.newTodo.title,"body":this.newTodo.body,"parent":0,"tasks":this.newTodo.tasks};
@@ -57,16 +57,15 @@
             localStorage.setItem('todos',JSON.stringify(tmp));
           }
         } else {
-/*          axios
-          .post("http://localhost:8081/api/new/task", {
-            task: this.newTodo,
-            id: this.$route.query.todo
-          })
-          .then(res => {
-            this.$router.go("/todo-list");
-          })
-          .catch(err => {});*/
+          let id =  this.$route.query.todo;
+          let newTask = this.$parent.todos.filter(data => data.id == id)[0];
+          this.newTodo.id = "1"+newTask.tasks.length;
+          let task = this.newTodo;
+          newTask.tasks.push(this.newTodo);
+          this.$parent.todos[this.$parent.todos.findIndex(data => data.id == id)] = newTask
+          localStorage.setItem('todos',JSON.stringify(this.$parent.todos));
         }
+            window.location = '/';
       }
     },
     mounted() {}

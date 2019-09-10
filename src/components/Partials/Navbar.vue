@@ -19,22 +19,6 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/">Home</router-link>
           </li>
-          <li
-            class="nav-item"
-          >
-            <router-link
-              class="nav-link"
-              :to="{name:'new-todo'}"
-            >Add Todo</router-link>
-          </li>
-          <li
-            class="nav-item"
-          >
-            <router-link
-              class="nav-link"
-              :to="{name:'new-todo'}"
-            >Delete Todo</router-link>
-          </li>
         </ul>
       </div>
     </div>
